@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersRepository } from './users.repository';
 import { UserEntity } from './serializers/user.serializer';
@@ -22,5 +22,18 @@ export class UsersService {
   }
   async update(user: UserEntity, inputs: EditUserDto): Promise<UserEntity> {
     return await this.usersRepository.createEntity(inputs);
+  }
+
+  async findOne(email: string) {
+    const user = await this.usersRepository.findOne({ email });
+
+    if (user) {
+      return user;
+    }
+
+    throw new HttpException(
+      'User with this email does not exist',
+      HttpStatus.NOT_FOUND,
+    );
   }
 }
